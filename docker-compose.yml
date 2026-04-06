@@ -16,6 +16,7 @@ services:
   # --------------------------------------------------------------------------
   db:
     image: postgres:15-alpine
+    container_name: superset-db
     restart: unless-stopped
     environment:
       POSTGRES_DB: superset
@@ -33,6 +34,7 @@ services:
   # FastAPI Auth Service  (SQLite)
   # --------------------------------------------------------------------------
   auth-service:
+    container_name: auth
     build:
       context: ./auth_service
     restart: unless-stopped
@@ -55,6 +57,7 @@ services:
   # Superset Init — runs migrations + bootstraps admin, then exits
   # --------------------------------------------------------------------------
   superset-init:
+    container_name: superset-init
     build:
       context: ./superset
     restart: "no"
@@ -79,6 +82,7 @@ services:
   # Superset Web
   # --------------------------------------------------------------------------
   superset:
+    container_name: superset-web
     build:
       context: ./superset
     restart: unless-stopped
