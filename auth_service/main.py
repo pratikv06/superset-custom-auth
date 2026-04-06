@@ -8,6 +8,7 @@ Endpoints:
   POST /auth/refresh        — exchange a refresh token for a new access token
   GET  /auth/validate       — validate an access token, return user info
   GET  /auth/me             — return the current user's profile
+  GET  /auth/users          — list all users (admin only)
   GET  /health              — liveness probe
 """
 
@@ -333,3 +334,13 @@ def validate(
 @app.get("/auth/me", response_model=UserOut)
 def me(current_user: User = Depends(get_current_user)):
     return current_user
+
+
+@app.get("/auth/users", response_model=list[UserOut])
+def list_users(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    if not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    return db.query(User).all()
